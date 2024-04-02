@@ -1,0 +1,10 @@
+[package]
+name = "timelapse-rs"
+version = "0.0.1"
+edition = "2021"
+
+[dependencies]
+metrics = { version = "0.22.3" }
+chrono = "0.4.37"
+metrics-exporter-prometheus = "0.14.0"
+reqwest = { version = "0.12.2", features = ["blocking"] }
