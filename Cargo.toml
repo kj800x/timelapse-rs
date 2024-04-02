@@ -8,3 +8,4 @@ metrics = { version = "0.22.3" }
 chrono = "0.4.37"
 metrics-exporter-prometheus = "0.14.0"
 reqwest = { version = "0.12.2", features = ["blocking"] }
+anyhow = "1.0.81"

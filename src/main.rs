@@ -1,7 +1,24 @@
-use metrics::{counter, describe_counter};
+use metrics::{counter, describe_counter, Counter};
 use metrics_exporter_prometheus::PrometheusBuilder;
+use reqwest::blocking::Client;
 use std::time::Duration;
 use std::{env, thread};
+
+fn fetch_snapshot(
+    client: &Client,
+    feed_url: &str,
+    output_folder: &str,
+    counter: &Counter,
+) -> Result<(), anyhow::Error> {
+    let bytes = client.get(feed_url).send()?.bytes()?;
+
+    // Write bytes to file in output file based on current timestamp.
+    let timestamp = chrono::Utc::now().timestamp();
+    let output_file = format!("{}/{}.jpg", output_folder, timestamp);
+    std::fs::write(output_file, bytes)?;
+
+    Ok(())
+}
 
 fn main() {
     let feed_url = env::var("FEED_URL").expect("FEED_URL environment variable must be set");
@@ -21,19 +38,13 @@ fn main() {
 
     loop {
         println!("Fetching snapshot...");
-        counter.increment(1);
-
-        let bytes = client
-            .get(feed_url.clone())
-            .send()
-            .unwrap()
-            .bytes()
-            .unwrap();
-
-        // Write bytes to file in output file based on current timestamp.
-        let timestamp = chrono::Utc::now().timestamp();
-        let output_file = format!("{}/{}.jpg", output_folder, timestamp);
-        std::fs::write(output_file, bytes).unwrap();
+        match fetch_snapshot(&client, &feed_url, &output_folder, &counter) {
+            Ok(_) => {
+                counter.increment(1);
+                println!("Snapshot fetched successfully.");
+            }
+            Err(e) => eprintln!("Error fetching snapshot: {}", e),
+        }
 
         // Sleep 1 hour.
         println!("Sleeping...");
