@@ -1,4 +1,5 @@
-use metrics::{counter, describe_counter, Counter};
+use anyhow::Error;
+use metrics::{counter, describe_counter};
 use metrics_exporter_prometheus::PrometheusBuilder;
 use reqwest::blocking::Client;
 use std::time::Duration;
@@ -8,9 +9,14 @@ fn fetch_snapshot(
     client: &Client,
     feed_url: &str,
     output_folder: &str,
-    counter: &Counter,
 ) -> Result<(), anyhow::Error> {
     let bytes = client.get(feed_url).send()?.bytes()?;
+
+    // Check if the received frame is the "Preview Not Available" frame.
+    let md5 = format!("{:x}", md5::compute(bytes.clone()));
+    if md5 == "64a9507f752d598345378763b25bdcaf" {
+        return Err(Error::msg("received Preview Not Available frame"));
+    }
 
     // Write bytes to file in output file based on current timestamp.
     let timestamp = chrono::Utc::now().timestamp();
@@ -38,7 +44,7 @@ fn main() {
 
     loop {
         println!("Fetching snapshot...");
-        match fetch_snapshot(&client, &feed_url, &output_folder, &counter) {
+        match fetch_snapshot(&client, &feed_url, &output_folder) {
             Ok(_) => {
                 counter.increment(1);
                 println!("Snapshot fetched successfully.");
