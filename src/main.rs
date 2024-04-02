@@ -37,6 +37,6 @@ fn main() {
 
         // Sleep 1 hour.
         println!("Sleeping...");
-        thread::sleep(Duration::from_secs(60 /* * 60*/));
+        thread::sleep(Duration::from_secs(60 * 60));
     }
 }
