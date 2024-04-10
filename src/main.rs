@@ -30,6 +30,7 @@ fn main() {
     let feed_url = env::var("FEED_URL").expect("FEED_URL environment variable must be set");
     let output_folder =
         env::var("OUTPUT_FOLDER").expect("OUTPUT_FOLDER environment variable must be set");
+    let sleep_secs: u64 = env::var("SLEEP_SECS").unwrap_or("3600").parse().unwrap("SLEEP_SECS must be set to a valid number");
     let builder = PrometheusBuilder::new();
     builder
         .with_http_listener(([0, 0, 0, 0], 9090))
@@ -54,6 +55,6 @@ fn main() {
 
         // Sleep 1 hour.
         println!("Sleeping...");
-        thread::sleep(Duration::from_secs(60 * 60));
+        thread::sleep(Duration::from_secs(sleep_secs));
     }
 }
