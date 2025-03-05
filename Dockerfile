@@ -1,4 +1,6 @@
-FROM rust:1.74
+FROM rust:1.80
+
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/timelapse-rs
 COPY . .
