@@ -1,4 +1,4 @@
-FROM rust:1.80
+FROM rust:1.85
 
 RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && rm -rf /var/lib/apt/lists/*
 
