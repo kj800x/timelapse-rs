@@ -79,6 +79,7 @@ impl Camera {
 
 fn main() {
     let feed_url = env::var("FEED_URL").expect("FEED_URL environment variable must be set");
+    let feed_name = env::var("FEED_NAME").unwrap_or(feed_url.clone());
     let output_folder =
         env::var("OUTPUT_FOLDER").expect("OUTPUT_FOLDER environment variable must be set");
     let camera_type: CameraType = env::var("CAMERA_TYPE")
@@ -98,7 +99,7 @@ fn main() {
         "timelapse_snapshot_count",
         "The number of snapshots taken by the timelapse service."
     );
-    let counter = counter!("timelapse_snapshot_count", "feed_url" => feed_url.clone());
+    let counter = counter!("timelapse_snapshot_count", "feed_name" => feed_name.clone());
 
     let camera = match camera_type {
         CameraType::Rtsp => Camera::Rtsp { rtsp_url: feed_url },
