@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: timelapse-rs-front-door
+  namespace: home-sensors
+spec:
+  type: LoadBalancer
+  selector:
+    app: timelapse-rs-front-door
+  ports:
+    - name: http
+      protocol: TCP
+      port: 9100
+      targetPort: 9090

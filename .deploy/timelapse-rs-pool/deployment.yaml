@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: timelapse-rs-pool
+  namespace: home-sensors
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: timelapse-rs-pool
+  template:
+    metadata:
+      labels:
+        app: timelapse-rs-pool
+    spec:
+      imagePullSecrets:
+        - name: ghcr-kj800x
+      containers:
+        - name: timelapse-rs-pool
+          image: ghcr.io/kj800x/timelapse-rs:commit-$SHA
+          command: ["timelapse-rs"]
+          workingDir: "/usr/src/timelapse-rs"
+          env:
+            - name: OUTPUT_FOLDER
+              value: "/data"
+            - name: CAMERA_TYPE
+              value: "RTSP"
+            - name: SLEEP_SECS
+              value: "300"
+            - name: FEED_NAME
+              value: "pool"
+            - name: FEED_URL
+              valueFrom:
+                secretKeyRef:
+                  name: timelapse-pool-feed-url
+                  key: FEED_URL
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: data-volume
+              mountPath: /data
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 9090
+            initialDelaySeconds: 10
+            periodSeconds: 30
+      volumes:
+        - name: data-volume
+          nfs:
+            server: 10.60.1.15
+            path: /data/archive/archive/timelapse/pool
