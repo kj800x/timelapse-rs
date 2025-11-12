@@ -31,7 +31,7 @@ spec:
             - name: FEED_NAME
               value: "front-yard"
             - name: FEED_URL
-              value: "rtsp://10.60.2.23:8554/front-yard"
+              value: "rtsp://wyze.home.coolkev.com:8554/front-yard"
           ports:
             - containerPort: 9090
           volumeMounts:
