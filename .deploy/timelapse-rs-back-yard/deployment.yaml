@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: timelapse-rs-front-yard
+  name: timelapse-rs-back-yard
   namespace: home-sensors
 spec:
   replicas: 1
   revisionHistoryLimit: 1
   selector:
     matchLabels:
-      app: timelapse-rs-front-yard
+      app: timelapse-rs-back-yard
   template:
     metadata:
       labels:
-        app: timelapse-rs-front-yard
+        app: timelapse-rs-back-yard
     spec:
       imagePullSecrets:
         - name: ghcr-kj800x
       containers:
-        - name: timelapse-rs-front-yard
+        - name: timelapse-rs-back-yard
           image: ghcr.io/kj800x/timelapse-rs:commit-$SHA
           command: ["timelapse-rs"]
           workingDir: "/usr/src/timelapse-rs"
@@ -29,11 +29,11 @@ spec:
             - name: SLEEP_SECS
               value: "900"
             - name: FEED_NAME
-              value: "front-yard"
+              value: "back-yard"
             - name: FEED_URL
               valueFrom:
                 secretKeyRef:
-                  name: timelapse-front-yard-feed-url
+                  name: timelapse-back-yard-feed-url
                   key: FEED_URL
           ports:
             - containerPort: 9090
@@ -50,4 +50,4 @@ spec:
         - name: data-volume
           nfs:
             server: 10.60.1.15
-            path: /data/archive/archive/timelapse/front-yard
+            path: /data/archive/archive/timelapse/back-yard
